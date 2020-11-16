@@ -4,6 +4,6 @@ Aplikacja, która ma za zadanie pomóc w uczeniu się tekstów.
 
 Tworzona jest w oparciu o Apache Maven.
 
-GUI - javafx.
+GUI - JavaFX.
 
 Aplikacja jest w stadium rozwojowym.
