@@ -6,7 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -20,6 +23,7 @@ import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,12 +31,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -101,7 +107,7 @@ public class App extends Application {
         
         // New file clicked
         menuItem1.setOnAction((ActionEvent e) -> {
-            
+            createFile(stage);
         });
         
         // Open file clicked
@@ -345,6 +351,48 @@ public class App extends Application {
         for (int i = 0; i < stringArray.length; i++)
             result += stringArray[i];
         return result;
+    }
+    
+    public void createFile(Stage stage){ 
+        VBox vBox = new VBox();
+        double width = stage.getWidth();
+        double height = stage.getHeight();
+        Label createText = new Label("Create your text");
+        createText.setStyle("-fx-font-size: 30pt;");
+        TextArea textArea = new TextArea ();   
+        textArea.setMinSize(width/2.5, height/2);
+        textArea.setMaxSize(width/2.5, height/2);
+        textArea.setPromptText("Enter the text...");
+        textArea.setStyle("-fx-control-inner-background: #d1dbff; -fx-prompt-text-fill: #ffffff; -fx-font-size: 18pt;");  
+        
+        Button buttonCreateFile = new Button("Create file");    
+        buttonCreateFile.setOnAction((ActionEvent e) -> {
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            fileChooser.getExtensionFilters().add(extFilter);
+            File newFile = fileChooser.showSaveDialog(stage);
+            
+            if (newFile != null) {
+                try {
+                    PrintWriter writer;
+                    writer = new PrintWriter(newFile);
+                    writer.println(textArea.getText());
+                    writer.close();
+                    file = newFile;
+                    workWithText(stage);
+                } catch (IOException ex) {
+        }
+            }
+        });
+        
+        vBox.getChildren().addAll(createText, textArea, buttonCreateFile);
+        vBox.setSpacing(50);
+        vBox.setAlignment(Pos.CENTER);
+        borderPane.setTop(menuLoad(stage));
+        borderPane.setCenter(vBox);
+        Scene scene = new Scene(borderPane);
+        stage.setScene(scene);
+        stage.show();
     }
      
     public static void main(String[] args) {
