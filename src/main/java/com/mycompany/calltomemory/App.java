@@ -8,14 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import javafx.application.Application;
@@ -23,7 +19,6 @@ import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -38,7 +33,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Screen;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -53,7 +47,7 @@ public class App extends Application {
     File file;
     int numOfWords;
     int numOfRows;
-    int percentOfWords = 5;
+    int percentOfWords;
     int plus = 5;
     
     @Override
@@ -154,7 +148,8 @@ public class App extends Application {
     }
     
     public void workWithText(Stage stage) throws FileNotFoundException, IOException{
-        Locale.setDefault(new Locale("ru"));
+        numOfWords = 0;
+        percentOfWords = 5;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
         Scanner sc = new Scanner(bufferedReader);
         VBox vbox = new VBox();
@@ -162,6 +157,7 @@ public class App extends Application {
         Label top = new Label("Try to remember the text");
         top.setStyle("-fx-font-size: 30pt;");
         textVBox.setAlignment(Pos.CENTER);
+        textVBox.getChildren().clear();
         
         boolean isFirstTime = true;
         
@@ -189,7 +185,7 @@ public class App extends Application {
                             label = new Label(line.substring(j - wordLength, j + 1));
                         System.setProperty("file.encoding","utf-8");
                         System.out.println("aaaaaa " + System.getProperty("file.encoding"));
-                        label.setStyle("-fx-font-size: 15pt; -fx-font-family: \"Arial\";");
+                        label.setStyle("-fx-font-size: 15pt;");
                       
                         hBox.getChildren().add(label);
                         wordLength = 0;
@@ -233,12 +229,11 @@ public class App extends Application {
         vbox.getChildren().add(buttonCheck);
         Random rand = new Random();
         int numOfWordsToRemove = numOfWords * percentOfWords / 100;
-        if (percentOfWords >= 100){
+        if (numOfWordsToRemove >= numOfWords){
             numOfWordsToRemove = numOfWords;
             isLastTime = true;
         }
         else isLastTime = false;
-        
         ((Label)vbox.getChildren().get(2)).setText(String.valueOf(numOfWordsToRemove) + '/' + String.valueOf(numOfWords));
         
         MyNode [] nodes = new MyNode[numOfWordsToRemove];
@@ -378,8 +373,11 @@ public class App extends Application {
                     writer = new PrintWriter(newFile);
                     writer.println(textArea.getText());
                     writer.close();
-                    file = newFile;
+                    String fileName = "resources/" + newFile.getName();
+                    file = new File(fileName);
+                    Files.copy(newFile.toPath(), file.toPath());
                     workWithText(stage);
+                workWithText(stage);
                 } catch (IOException ex) {
         }
             }
