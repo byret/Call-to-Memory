@@ -6,8 +6,6 @@ Tworzona jest w oparciu o Apache Maven.
 
 GUI - JavaFX.
 
-Aplikacja jest w stadium rozwojowym.
-
 UI/UX - edko-lyubov
 
 Kod - byret
